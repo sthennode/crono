@@ -37,26 +37,26 @@ public:
 };
 typedef loggert<> logger;
 
-typedef logger logger_extendt_implements;
-typedef base logger_extendt_extends;
+typedef logger logger_instancet_implements;
+typedef xos::logger::instance logger_instancet_extends;
 ///////////////////////////////////////////////////////////////////////
-///  Class: logger_extendt
+///  Class: logger_instancet
 ///////////////////////////////////////////////////////////////////////
-template <class TImplements = logger_extendt_implements, class TExtends = logger_extendt_extends>
-class _EXPORT_CLASS logger_extendt: virtual public TImplements, public TExtends {
+template <class TImplements = logger_instancet_implements, class TExtends = logger_instancet_extends>
+class _EXPORT_CLASS logger_instancet: virtual public TImplements, public TExtends {
 public:
     typedef TImplements implements;
     typedef TExtends extends;
 
-    logger_extendt() {
+    logger_instancet() {
     }
-    virtual ~logger_extendt() {
+    virtual ~logger_instancet() {
     }
 private:
-    logger_extendt(const logger_extendt &copy) {
+    logger_instancet(const logger_instancet &copy) {
     }
 };
-typedef logger_extendt<> logger_extend;
+typedef logger_instancet<> logger_instance;
 
 } /// namespace io
 } /// namespace xos

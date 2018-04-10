@@ -138,6 +138,51 @@ protected:
 } /// namespace logger
 } /// namespace xos
 
+#define XOS_LOGGING_LEVELS ::xos::logger::level::enable
+
+#define XOS_LOGGING_LEVELS_ALL ::xos::logger::levels::all
+#define XOS_LOGGING_LEVELS_NONE ::xos::logger::levels::none
+#define XOS_LOGGING_LEVELS_FATAL ::xos::logger::levels::fatal
+#define XOS_LOGGING_LEVELS_ERROR ::xos::logger::levels::error
+#define XOS_LOGGING_LEVELS_WARN ::xos::logger::levels::warn
+#define XOS_LOGGING_LEVELS_INFO ::xos::logger::levels::info
+#define XOS_LOGGING_LEVELS_DEBUG ::xos::logger::levels::debug
+#define XOS_LOGGING_LEVELS_TRACE ::xos::logger::levels::trace
+
+#define XOS_LOGGING_LEVELS_MESSAGE_ALL ::xos::logger::levels::message_all
+#define XOS_LOGGING_LEVELS_MESSAGE_NONE ::xos::logger::levels::message_none
+#define XOS_LOGGING_LEVELS_MESSAGE_FATAL ::xos::logger::levels::message_fatal
+#define XOS_LOGGING_LEVELS_MESSAGE_ERROR ::xos::logger::levels::message_error
+#define XOS_LOGGING_LEVELS_MESSAGE_WARN ::xos::logger::levels::message_warn
+#define XOS_LOGGING_LEVELS_MESSAGE_INFO ::xos::logger::levels::message_info
+#define XOS_LOGGING_LEVELS_MESSAGE_DEBUG ::xos::logger::levels::message_debug
+#define XOS_LOGGING_LEVELS_MESSAGE_TRACE ::xos::logger::levels::message_trace
+
+#define XOS_LOGGING_LEVELS_ALL_MESSAGE XOS_LOGGING_LEVELS_MESSAGE_ALL
+#define XOS_LOGGING_LEVELS_NONE_MESSAGE XOS_LOGGING_LEVELS_MESSAGE_NONE
+#define XOS_LOGGING_LEVELS_FATAL_MESSAGE XOS_LOGGING_LEVELS_MESSAGE_FATAL
+#define XOS_LOGGING_LEVELS_ERROR_MESSAGE XOS_LOGGING_LEVELS_MESSAGE_ERROR
+#define XOS_LOGGING_LEVELS_WARN_MESSAGE XOS_LOGGING_LEVELS_MESSAGE_WARN
+#define XOS_LOGGING_LEVELS_INFO_MESSAGE XOS_LOGGING_LEVELS_MESSAGE_INFO
+#define XOS_LOGGING_LEVELS_DEBUG_MESSAGE XOS_LOGGING_LEVELS_MESSAGE_DEBUG
+#define XOS_LOGGING_LEVELS_TRACE_MESSAGE XOS_LOGGING_LEVELS_MESSAGE_TRACE
+
+#if !defined(XOS_LOGGING_LEVELS_DEFAULT)
+#if defined(TRACE_BUILD)
+#define XOS_LOGGING_LEVELS_DEFAULT XOS_LOGGING_LEVELS_TRACE
+#else // defined(TRACE_BUILD)
+#if defined(DEBUG_BUILD)
+#define XOS_LOGGING_LEVELS_DEFAULT XOS_LOGGING_LEVELS_DEBUG
+#else // defined(DEBUG_BUILD)
+#define XOS_LOGGING_LEVELS_DEFAULT XOS_LOGGING_LEVELS_ERROR
+#endif // defined(DEBUG_BUILD)
+#endif // defined(TRACE_BUILD)
+#endif // !defined(XOS_LOGGING_LEVELS_DEFAULT)
+
+#if !defined(XOS_DEFAULT_LOGGING_LEVELS)
+#define XOS_DEFAULT_LOGGING_LEVELS XOS_LOGGING_LEVELS_DEFAULT
+#endif // !defined(XOS_DEFAULT_LOGGING_LEVELS)
+
 #endif /// _XOS_LOGGER_LEVEL_HPP 
         
 

@@ -13,39 +13,26 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: main_main.cpp
+///   File: logger.cpp
 ///
 /// Author: $author$
-///   Date: 4/9/2018
+///   Date: 4/10/2018
 ///////////////////////////////////////////////////////////////////////
-#include "xos/console/main_main.hpp"
-#include "xos/console/main.hpp"
 #include "xos/console/logger.hpp"
 
 namespace xos {
 namespace console {
 
+///////////////////////////////////////////////////////////////////////
+///  Class: instancet
+///////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////
+///  Class: loggert
+///////////////////////////////////////////////////////////////////////
+
 } /// namespace console
 } /// namespace xos
 
-int main(int argc, char** argv, char** env) {
-    int err = 0;
-    ERR_LOG_DEBUG("try {...");
-    try {
-        ::xos::console::std::io io;
-        ::xos::console::logger logger(io);
+        
 
-        LOG_DEBUG("::xos::console::main::the_main(argc, argv, env)...");
-        err = ::xos::console::main::the_main(argc, argv, env);
-        LOG_DEBUG("...err = " << err << " on ::xos::console::main::the_main(argc, argv, env)");
-
-        LOG_DEBUG("...} try");
-    } catch (const ::xos::exception& e) {
-        ERR_LOG_ERROR("...catch (::xos::exception& e.status() = " << e.status_to_string() << ")");
-        err = 1;
-    } catch (...) {
-        ERR_LOG_ERROR("...catch (...)");
-        err = 1;
-    }
-    return err;
-}
