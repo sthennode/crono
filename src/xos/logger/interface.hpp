@@ -249,7 +249,7 @@ typedef instancet<> instance;
 } /// namespace xos
 
 ///
-///
+/// XOS_ INIT / FINI / _LOGGER
 /// 
 #define XOS_INIT_LOGGER(logger_) { \
 ::xos::logger::interface* logger = logger_; \
@@ -268,7 +268,7 @@ if ((logger)) { logger->enable_for(level_); } }
  :(::xos::logger::level(::xos::logger::level::none)))
 
 ///
-///
+///  XOS_LOG_PLAIN
 /// 
 #define XOS_LOG_PLAIN(logger_, level_, message_) { \
 ::xos::logger::interface* logger = logger_; \
@@ -281,8 +281,14 @@ if ((logger)?(logger->is_enabled_for(level_)):(false)) {\
 if ((logger)?(logger->is_enabled_for(level_)):(false)) {\
    logger->logf(level_, format_, ##__VA_ARGS__); } }
 
+#define XOS_IF_LOG_PLAIN(is_logged_, logger_, level_, message_) { \
+if ((is_logged_)) { XOS_LOG_PLAIN(logger_, level_, message_); }
+
+#define XOS_IF_LOG_PLAINF(is_logged_, logger_, level_, format_, ...) { \
+if ((is_logged_)) { XOS_LOG_PLAINF(logger_, level_, format_,  ##__VA_ARGS__); }
+
 ///
-///
+/// XOS_LOG_FUNCTION
 /// 
 #define XOS_LOG_FUNCTION(logger_, level_, message_) { \
 ::xos::logger::interface* logger = logger_; \
@@ -295,8 +301,14 @@ if ((logger)?(logger->is_enabled_for(level_)):(false)) {\
 if ((logger)?(logger->is_enabled_for(level_)):(false)) {\
    logger->logf(level_, XOS_LOGGER_FUNCTION, format_, ##__VA_ARGS__); } }
 
+#define XOS_IF_LOG_FUNCTION(is_logged_, logger_, level_, message_) { \
+if ((is_logged_)) { XOS_LOG_FUNCTION(logger_, level_, message_); }
+
+#define XOS_IF_LOG_FUNCTIONF(is_logged_, logger_, level_, format_, ...) { \
+if ((is_logged_)) { XOS_LOG_FUNCTIONF(logger_, level_, format_, ##__VA_ARGS__); }
+
 ///
-///
+/// XOS_LOG_LOCATION
 /// 
 #define XOS_LOG_LOCATION(logger_, level_, message_) { \
 ::xos::logger::interface* logger = logger_; \
@@ -304,11 +316,20 @@ if ((logger)?(logger->is_enabled_for(level_)):(false)) {\
    ::xos::logger::message message; \
    logger->log(level_, XOS_LOGGER_LOCATION, message << message_); } }
 
-#define XOS_LOGF_LOCATION(logger_, level_, format_, ...) { \
+#define XOS_LOG_LOCATIONF(logger_, level_, format_, ...) { \
 ::xos::logger::interface* logger = logger_; \
 if ((logger)?(logger->is_enabled_for(level_)):(false)) {\
    logger->logf(level_, XOS_LOGGER_LOCATION, format_, ##__VA_ARGS__); } }
 
+#define XOS_IF_LOG_LOCATION(is_logged_, logger_, level_, message_) { \
+if ((is_logged_)) { XOS_LOG_LOCATION(logger_, level_, message_); }
+
+#define XOS_IF_LOG_LOCATIONF(is_logged_, logger_, level_, format_, ...) { \
+if ((is_logged_)) { XOS_LOG_LOCATIONF(logger_, level_, format_, ##__VA_ARGS__); }
+
+///
+/// XOS_LOG
+/// 
 #if defined(XOS_PLAIN_LOGGING)
 #define XOS_LOG XOS_LOG_PLAIN
 #define XOS_LOGF XOS_LOG_PLAINF
@@ -323,23 +344,39 @@ if ((logger)?(logger->is_enabled_for(level_)):(false)) {\
 #endif // defined(XOS_PLAIN_LOGGING)
 
 ///
-///
+/// XOS_IF_LOG
 /// 
-#define XOS_LOG_ANY_LEVEL(logger_, message_) { \
+#if defined(XOS_PLAIN_LOGGING)
+#define XOS_IF_LOG XOS_IF_LOG_PLAIN
+#define XOS_IF_LOGF XOS_IF_LOG_PLAINF
+#else // defined(XOS_PLAIN_LOGGING)
+#if defined(XOS_FUNCTION_LOGGING)
+#define XOS_IF_LOG XOS_IF_LOG_FUNCTION
+#define XOS_IF_LOGF XOS_IF_LOG_FUNCTIONF
+#else // defined(XOS_FUNCTION_LOGGING)
+#define XOS_IF_LOG XOS_IF_LOG_LOCATION
+#define XOS_IF_LOGF XOS_IF_LOG_LOCATIONF
+#endif // defined(XOS_FUNCTION_LOGGING)
+#endif // defined(XOS_PLAIN_LOGGING)
+
+///
+/// XOS_LOG_ANY_LEVEL_
+/// 
+#define XOS_LOG_ANY_LEVEL_LOCATION(logger_, message_) { \
 ::xos::logger::interface* logger = logger_; \
 if ((logger)) {\
    ::xos::logger::level level_; \
    ::xos::logger::message message; \
    logger->log(level_, XOS_LOGGER_LOCATION, message << message_); } }
 
-#define XOS_LOG_ANY_LEVELF(logger_, format_, ...) { \
+#define XOS_LOG_ANY_LEVEL_LOCATIONF(logger_, format_, ...) { \
 ::xos::logger::interface* logger = logger_; \
 if ((logger)) {\
    ::xos::logger::level level_; \
    logger->logf(level_, XOS_LOGGER_LOCATION, format_, ##__VA_ARGS__); } }
 
 ///
-///
+/// XOS_LOG_MESSAGE
 /// 
 #define XOS_LOG_MESSAGE(logger_, level_, message_) { \
 ::xos::logger::interface* logger = logger_; \
@@ -364,7 +401,7 @@ if ((logger)?(logger->is_enabled_for(level_)):(false)) {\
    logger->logfv(level_, message << message_, format_, va_); } }
 
 ///
-///
+/// XOS_LOG_MESSAGE_ANY_LEVEL
 /// 
 #define XOS_LOG_MESSAGE_ANY_LEVEL(logger_, message_) { \
 ::xos::logger::interface* logger = logger_; \
@@ -393,7 +430,7 @@ if ((logger)) {\
    logger->logfv(level_, message << message_, format_, va_); } }
 
 ///
-///
+/// XOS_LOGGER_ INIT / FINI / LEVEL / DEFAULT
 /// 
 #define XOS_DEFAULT_LOGGER ::xos::logger::interface::get_default()
 #define XOS_LOGGER_INIT() XOS_INIT_LOGGER(XOS_DEFAULT_LOGGER)
@@ -402,7 +439,7 @@ if ((logger)) {\
 #define XOS_GET_LOGGING_LEVEL(level)  (level = XOS_GET_LOGGER_LEVEL(XOS_DEFAULT_LOGGER))
 
 ///
-///
+/// XOS_LOG_ ANY / FATAL .. TRACE
 /// 
 #define XOS_LOG_ANY(message) XOS_LOG_ANY_LEVEL(XOS_DEFAULT_LOGGER, message)
 #define XOS_LOG_FATAL(message) XOS_LOG(XOS_DEFAULT_LOGGER, ::xos::logger::level::fatal, message)
@@ -421,7 +458,7 @@ if ((logger)) {\
 #define XOS_LOG_TRACEF(message, ...) XOS_LOGF(XOS_DEFAULT_LOGGER, ::xos::logger::level::trace, message, ##__VA_ARGS__)
 
 ///
-///
+/// XOS_LOG_MESSAGE_ ANY / FATAL .. TRACE
 /// 
 #define XOS_LOG_MESSAGE_ANY(message) XOS_LOG_MESSAGE_ANY_LEVEL(XOS_DEFAULT_LOGGER, message)
 #define XOS_LOG_MESSAGE_FATAL(message) XOS_LOG_MESSAGE(XOS_DEFAULT_LOGGER, ::xos::logger::level::fatal_message, message)
@@ -440,6 +477,65 @@ if ((logger)) {\
 #define XOS_LOG_MESSAGE_TRACEF(message, ...) XOS_LOG_MESSAGEF(XOS_DEFAULT_LOGGER, ::xos::logger::level::trace_message, message, ##__VA_ARGS__)
 
 ///
+/// XOS_IF_LOG_ FATAL .. TRACE
+/// 
+#define XOS_IF_LOG_FATAL(__is_logged__, message) XOS_IF_LOG(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::fatal, message)
+#define XOS_IF_LOG_ERROR(__is_logged__, message) XOS_IF_LOG(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::error, message)
+#define XOS_IF_LOG_WARN(__is_logged__, message) XOS_IF_LOG(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::warn, message)
+#define XOS_IF_LOG_INFO(__is_logged__, message) XOS_IF_LOG(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::info, message)
+#define XOS_IF_LOG_DEBUG(__is_logged__, message) XOS_IF_LOG(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::debug, message)
+#define XOS_IF_LOG_TRACE(__is_logged__, message) XOS_IF_LOG(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::trace, message)
+
+#define XOS_IF_LOG_FATALF(__is_logged__, message, ...) XOS_IF_LOGF(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::fatal, message, ##__VA_ARGS__)
+#define XOS_IF_LOG_ERRORF(__is_logged__, message, ...) XOS_IF_LOGF(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::error, message, ##__VA_ARGS__)
+#define XOS_IF_LOG_WARNF(__is_logged__, message, ...) XOS_IF_LOGF(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::warn, message, ##__VA_ARGS__)
+#define XOS_IF_LOG_INFOF(__is_logged__, message, ...) XOS_IF_LOGF(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::info, message, ##__VA_ARGS__)
+#define XOS_IF_LOG_DEBUGF(__is_logged__, message, ...) XOS_IF_LOGF(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::debug, message, ##__VA_ARGS__)
+#define XOS_IF_LOG_TRACEF(__is_logged__, message, ...) XOS_IF_LOGF(__is_logged__, XOS_DEFAULT_LOGGER, ::xos::logger::level::trace, message, ##__VA_ARGS__)
+
+///
+/// XOS_IF_ERR_LOGGED_ ERROR / DEBUG / TRACE
+/// 
+#define XOS_IF_ERR_LOGGED_ERROR(__is_logged__, __is_err_logged__, message) \
+if (__is_logged__) { XOS_LOG_ERROR(message); } \
+else { if (__is_err_logged__) { XOS_ERR_LOG_ERROR(message); } }
+
+#define XOS_IF_ERR_LOGGED_DEBUG(__is_logged__, __is_err_logged__, message) \
+if (__is_logged__) { XOS_LOG_DEBUG(message); } \
+else { if (__is_err_logged__) { XOS_ERR_LOG_DEBUG(message); } }
+
+#define XOS_IF_ERR_LOGGED_TRACE(__is_logged__, __is_err_logged__, message) \
+if (__is_logged__) { XOS_LOG_TRACE(message); } \
+else { if (__is_err_logged__) { XOS_ERR_LOG_TRACE(message); } }
+
+///
+/// XOS_IS_LOGGED_ ERROR / DEBUG / TRACE
+/// 
+#define XOS_IS_LOGGED_ERROR(message) \
+if (this->is_logged()) { XOS_LOG_ERROR(message); }
+
+#define XOS_IS_LOGGED_DEBUG(message) \
+if (this->is_logged()) { XOS_LOG_DEBUG(message); }
+
+#define XOS_IS_LOGGED_TRACE(message) \
+if (this->is_logged()) { XOS_LOG_TRACE(message); }
+
+///
+/// XOS_IS_ERR_LOGGED_ ERROR / DEBUG / TRACE
+/// 
+#define XOS_IS_ERR_LOGGED_ERROR(message) \
+if (this->is_logged()) { XOS_LOG_ERROR(message); } \
+else { if (this->is_err_logged()) { XOS_ERR_LOG_ERROR(message); } }
+
+#define XOS_IS_ERR_LOGGED_DEBUG(message) \
+if (this->is_logged()) { XOS_LOG_DEBUG(message); } \
+else { if (this->is_err_logged()) { XOS_ERR_LOG_DEBUG(message); } }
+
+#define XOS_IS_ERR_LOGGED_TRACE(message) \
+if (this->is_logged()) { XOS_LOG_TRACE(message); } \
+else { if (this->is_err_logged()) { XOS_ERR_LOG_TRACE(message); } }
+
+///
 /// LOG_ TRACE / DEBUG / ERROR
 /// 
 #if !defined(LOG_TRACE)
@@ -454,6 +550,64 @@ if ((logger)) {\
 #define LOG_ERROR(__message__) XOS_LOG_ERROR(__message__)
 #endif /// !defined(LOG_ERROR)
 
-#endif /// _XOS_LOGGER_INTERFACE_HPP 
-        
+///
+/// IF_LOG_ TRACE / DEBUG / ERROR
+/// 
+#if !defined(IF_LOG_TRACE)
+#define IF_LOG_TRACE(__is_logged__, __message__) XOS_IF_LOG_TRACE(__is_logged__, __message__)
+#endif /// !defined(IF_LOG_TRACE)
 
+#if !defined(IF_LOG_DEBUG)
+#define IF_LOG_DEBUG(__is_logged__, __message__) XOS_IF_LOG_DEBUG(__is_logged__, __message__)
+#endif /// !defined(IF_LOG_DEBUG)
+
+#if !defined(IF_LOG_ERROR)
+#define IF_LOG_ERROR(__is_logged__, __message__) XOS_IF_LOG_ERROR(__is_logged__, __message__)
+#endif /// !defined(IF_LOG_ERROR)
+
+///
+/// IF_ERR_LOGGED_ TRACE / DEBUG / ERROR
+/// 
+#if !defined(IF_ERR_LOGGED_TRACE)
+#define IF_ERR_LOGGED_TRACE(__is_logged__, __is_err_logged__, __message__) XOS_IF_ERR_LOGGED_TRACE(__is_logged__, __is_err_logged__, __message__)
+#endif /// !defined(IF_ERR_LOGGED_TRACE)
+
+#if !defined(IF_ERR_LOGGED_DEBUG)
+#define IF_ERR_LOGGED_DEBUG(__is_logged__, __is_err_logged__, __message__) XOS_IF_ERR_LOGGED_DEBUG(__is_logged__, __is_err_logged__, __message__)
+#endif /// !defined(IF_ERR_LOGGED_DEBUG)
+
+#if !defined(IF_ERR_LOGGED_ERROR)
+#define IF_ERR_LOGGED_ERROR(__is_logged__, __is_err_logged__, __message__) XOS_IF_ERR_LOGGED_ERROR(__is_logged__, __is_err_logged__, __message__)
+#endif /// !defined(IF_ERR_LOGGED_ERROR)
+
+///
+/// IS_LOGGED_ TRACE / DEBUG / ERROR
+/// 
+#if !defined(IS_LOGGED_TRACE)
+#define IS_LOGGED_TRACE(__message__) XOS_IS_LOGGED_TRACE(__message__)
+#endif /// !defined(IS_LOGGED_TRACE)
+
+#if !defined(IS_LOGGED_DEBUG)
+#define IS_LOGGED_DEBUG(__message__) XOS_IS_LOGGED_DEBUG(__message__)
+#endif /// !defined(IS_LOGGED_DEBUG)
+
+#if !defined(IS_LOGGED_ERROR)
+#define IS_LOGGED_ERROR(__message__) XOS_IS_LOGGED_ERROR(__message__)
+#endif /// !defined(IS_LOGGED_ERROR)
+
+///
+/// IS_ERR_LOGGED_ TRACE / DEBUG / ERROR
+/// 
+#if !defined(IS_ERR_LOGGED_TRACE)
+#define IS_ERR_LOGGED_TRACE(__message__) XOS_IS_ERR_LOGGED_TRACE(__message__)
+#endif /// !defined(IS_ERR_LOGGED_TRACE)
+
+#if !defined(IS_ERR_LOGGED_DEBUG)
+#define IS_ERR_LOGGED_DEBUG(__message__) XOS_IS_ERR_LOGGED_DEBUG(__message__)
+#endif /// !defined(IS_ERR_LOGGED_DEBUG)
+
+#if !defined(IS_ERR_LOGGED_ERROR)
+#define IS_ERR_LOGGED_ERROR(__message__) XOS_IS_ERR_LOGGED_ERROR(__message__)
+#endif /// !defined(IS_ERR_LOGGED_ERROR)
+
+#endif /// _XOS_LOGGER_INTERFACE_HPP 
